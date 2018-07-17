@@ -30,7 +30,6 @@ import java.util.List;
 public final class ExoPlayerView extends FrameLayout {
 
     private View surfaceView;
-    private final View shutterView;
     private final SubtitleView subtitleLayout;
     private final AspectRatioFrameLayout layout;
     private final ComponentListener componentListener;
@@ -66,10 +65,6 @@ public final class ExoPlayerView extends FrameLayout {
         layout = new AspectRatioFrameLayout(context);
         layout.setLayoutParams(aspectRatioParams);
 
-        shutterView = new View(getContext());
-        shutterView.setLayoutParams(layoutParams);
-        shutterView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
-
         subtitleLayout = new SubtitleView(context);
         subtitleLayout.setLayoutParams(layoutParams);
         subtitleLayout.setUserDefaultStyle();
@@ -77,8 +72,7 @@ public final class ExoPlayerView extends FrameLayout {
 
         updateSurfaceView();
 
-        layout.addView(shutterView, 1, layoutParams);
-        layout.addView(subtitleLayout, 2, layoutParams);
+        layout.addView(subtitleLayout, 1, layoutParams);
 
         addViewInLayout(layout, 0, aspectRatioParams);
     }
@@ -124,7 +118,7 @@ public final class ExoPlayerView extends FrameLayout {
             this.player.setVideoSurface(null);
         }
         this.player = player;
-        shutterView.setVisibility(VISIBLE);
+        surfaceView.setAlpha(0);
         if (player != null) {
             setVideoView();
             player.setVideoListener(componentListener);
@@ -183,8 +177,6 @@ public final class ExoPlayerView extends FrameLayout {
                 return;
             }
         }
-        // Video disabled so the shutter must be closed.
-        shutterView.setVisibility(VISIBLE);
     }
 
     private final class ComponentListener implements SimpleExoPlayer.VideoListener,
@@ -212,7 +204,7 @@ public final class ExoPlayerView extends FrameLayout {
 
         @Override
         public void onRenderedFirstFrame() {
-            shutterView.setVisibility(INVISIBLE);
+            surfaceView.setAlpha(1);
         }
 
         // ExoPlayer.EventListener implementation
